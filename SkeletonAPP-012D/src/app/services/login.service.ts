@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { User } from '../models/user';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
 
-  loggedUser!: User;
+  loggedUser!: User | null;
+  isLogged: boolean = false;
 
   users: User[] = [
     new User('admin', 'admin@ionic.com', '12345'),
@@ -14,7 +16,7 @@ export class LoginService {
     new User('other', 'other@ionic.com', '44555'),
   ];
 
-  constructor() { }
+  constructor(private storageService: StorageService) { }
 
   validateLogin(u: string, p: string): boolean {
     const found = this.users.find(user => user.username === u)
@@ -23,6 +25,8 @@ export class LoginService {
       const matchPwd = found.password === p;
       if (matchPwd) {
         this.loggedUser = found;
+        this.isLogged = true;
+        this.storageService.set('loggedUser', this.loggedUser);
       }
       return matchPwd
     }
@@ -30,9 +34,23 @@ export class LoginService {
     return false;
   }
 
-  isAuthenticated(): boolean {
+  async isAuthenticated() {
     console.log(this.loggedUser)
-    console.log("user existe: " + (this.loggedUser !== undefined))
-    return this.loggedUser !== undefined;
+    console.log(this.isLogged)
+    console.log("user existe: " + (this.loggedUser !== undefined && this.loggedUser !== null))
+    if(this.loggedUser === undefined || this.loggedUser === null){
+      const user = await this.storageService.get('loggedUser');
+      if(user) {
+        console.log('LoginService found user in storage')
+        this.loggedUser = user;
+      }
+    }
+    return this.isLogged;
+  }
+
+  logout() {
+    this.loggedUser = null;
+    this.isLogged = false;
+    this.storageService.remove('loggedUser');
   }
 }

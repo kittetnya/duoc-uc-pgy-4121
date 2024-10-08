@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { LoginService } from 'src/app/services/login.service';
 
 @Component({
   selector: 'app-home',
@@ -17,13 +18,14 @@ export class HomePage implements OnInit {
   alertButtons = ['Ok'];
 
   constructor(
-    private router: Router
+    private router: Router,
+    private loginService: LoginService
   ) {
-    const state = this.router.getCurrentNavigation()?.extras.state;
-    if(state){
-      console.log(`Username: ${state['user']}`)
-      this.username = state['user']
+    const loggedUser = this.loginService.getLoggedUser()
+    if(loggedUser){
+      this.username = loggedUser.username;
     }
+
     this.edLevels.set('-1', 'Pre Basica');
     this.edLevels.set('0', 'Basica');
     this.edLevels.set('1', 'Media');
@@ -40,5 +42,10 @@ export class HomePage implements OnInit {
     this.lastname = '';
     this.edLevel = '';
     this.birthday = '';
+  }
+
+  logout(){
+    this.loginService.logout();
+    this.router.navigate(['/login']);
   }
 }

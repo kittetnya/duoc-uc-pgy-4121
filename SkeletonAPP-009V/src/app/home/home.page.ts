@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { LoginService } from '../services/login.service';
+import { StorageService } from '../services/storage.service';
 
 
 @Component({
@@ -21,7 +22,8 @@ export class HomePage {
   constructor(
     private router: Router,
     private toastController: ToastController,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private storageService: StorageService
   ) {
     this.mainTitle = 'SkeletonAPP-009V!!!';
     this.subTitle = 'Aqui comienza!!!';
